@@ -61,6 +61,10 @@ jobs:
             platforms/tiktok.js \
             platforms/bilibili.js \
             platforms/youtube.js \
+            platforms/weibo.js \
+            platforms/xiaohongshu.js \
+            background/xhs-inject.js \
+            background/xhs-content.js \
             icons/icon16.png \
             icons/icon48.png \
             icons/icon128.png; do
@@ -85,6 +89,10 @@ jobs:
               'platforms/tiktok.js',
               'platforms/bilibili.js',
               'platforms/youtube.js',
+              'platforms/weibo.js',
+              'platforms/xiaohongshu.js',
+              'background/xhs-inject.js',
+              'background/xhs-content.js',
             ];
             let ok = true;
             for (const f of files) {

@@ -37,6 +37,22 @@ const PLATFORMS = {
       { id: "watchlater", label: "Watch Later", desc: "稍后观看" },
     ],
   },
+  weibo: {
+    name: "Weibo",
+    categories: [
+      { id: "following", label: "Following", desc: "关注" },
+      { id: "likes", label: "Likes", desc: "赞过的微博" },
+      { id: "favorites", label: "Favorites", desc: "收藏" },
+    ],
+  },
+  xiaohongshu: {
+    name: "Xiaohongshu",
+    categories: [
+      { id: "following", label: "Following", desc: "关注" },
+      { id: "likes", label: "Likes", desc: "点赞" },
+      { id: "collections", label: "Collections", desc: "收藏" },
+    ],
+  },
 };
 
 let selectedPlatform = "x";

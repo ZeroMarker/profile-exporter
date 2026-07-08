@@ -1,4 +1,4 @@
-importScripts("../utils/api.js", "../utils/export.js", "../platforms/x.js", "../platforms/instagram.js", "../platforms/tiktok.js", "../platforms/bilibili.js", "../platforms/youtube.js");
+importScripts("../utils/api.js", "../utils/export.js", "../platforms/x.js", "../platforms/instagram.js", "../platforms/tiktok.js", "../platforms/bilibili.js", "../platforms/youtube.js", "../platforms/weibo.js", "../platforms/xiaohongshu.js");
 
 const platformModules = {
   x: PlatformX,
@@ -6,6 +6,8 @@ const platformModules = {
   tiktok: PlatformTikTok,
   bilibili: PlatformBilibili,
   youtube: PlatformYouTube,
+  weibo: PlatformWeibo,
+  xiaohongshu: PlatformXiaohongshu,
 };
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

@@ -58,6 +58,8 @@ jobs:
             - **TikTok** — Following, Likes, Favorites
             - **Bilibili** — Following, Favorites
             - **YouTube** — Subscriptions, Watch Later
+            - **Weibo** — Following, Likes, Favorites
+            - **Xiaohongshu** — Following, Likes, Collections
 
             ### Export Formats
             JSON and CSV

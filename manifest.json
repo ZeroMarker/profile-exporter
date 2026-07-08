@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Profile Exporter",
-  "version": "1.0.0",
-  "description": "Export your following, likes, and favorites from X, Instagram, TikTok, Bilibili, and YouTube.",
+  "version": "1.1.0",
+  "description": "Export your following, likes, and favorites from X, Instagram, TikTok, Bilibili, YouTube, Weibo, and Xiaohongshu.",
   "permissions": [
     "cookies",
     "activeTab",
@@ -16,11 +16,27 @@
     "https://api.bilibili.com/*",
     "https://www.bilibili.com/*",
     "https://www.youtube.com/*",
-    "https://accounts.google.com/*"
+    "https://accounts.google.com/*",
+    "https://weibo.com/*",
+    "https://www.xiaohongshu.com/*",
+    "https://edith.xiaohongshu.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["background/xhs-inject.js"],
+      "matches": ["https://www.xiaohongshu.com/*"]
+    }
   ],
   "background": {
     "service_worker": "background/service-worker.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://www.xiaohongshu.com/*"],
+      "js": ["background/xhs-content.js"],
+      "run_at": "document_start"
+    }
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
