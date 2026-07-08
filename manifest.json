@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Profile Exporter",
-  "version": "1.1.0",
-  "description": "Export your following, likes, and favorites from X, Instagram, TikTok, Bilibili, YouTube, Weibo, and Xiaohongshu.",
+  "version": "1.2.0",
+  "description": "Export your following, likes, and favorites from X, Instagram, TikTok, Bilibili, YouTube, Weibo, Xiaohongshu, and Douyin.",
   "permissions": [
     "cookies",
     "activeTab",
@@ -19,12 +19,17 @@
     "https://accounts.google.com/*",
     "https://weibo.com/*",
     "https://www.xiaohongshu.com/*",
-    "https://edith.xiaohongshu.com/*"
+    "https://edith.xiaohongshu.com/*",
+    "https://www.douyin.com/*"
   ],
   "web_accessible_resources": [
     {
       "resources": ["background/xhs-inject.js"],
       "matches": ["https://www.xiaohongshu.com/*"]
+    },
+    {
+      "resources": ["background/douyin-inject.js"],
+      "matches": ["https://www.douyin.com/*"]
     }
   ],
   "background": {
@@ -34,6 +39,11 @@
     {
       "matches": ["https://www.xiaohongshu.com/*"],
       "js": ["background/xhs-content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.douyin.com/*"],
+      "js": ["background/douyin-content.js"],
       "run_at": "document_start"
     }
   ],

@@ -53,6 +53,14 @@ const PLATFORMS = {
       { id: "collections", label: "Collections", desc: "收藏" },
     ],
   },
+  douyin: {
+    name: "Douyin",
+    categories: [
+      { id: "following", label: "Following", desc: "关注" },
+      { id: "likes", label: "Likes", desc: "点赞" },
+      { id: "favorites", label: "Favorites", desc: "收藏" },
+    ],
+  },
 };
 
 let selectedPlatform = "x";

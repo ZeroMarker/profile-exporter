@@ -65,6 +65,9 @@ jobs:
             platforms/xiaohongshu.js \
             background/xhs-inject.js \
             background/xhs-content.js \
+            platforms/douyin.js \
+            background/douyin-inject.js \
+            background/douyin-content.js \
             icons/icon16.png \
             icons/icon48.png \
             icons/icon128.png; do
@@ -93,6 +96,9 @@ jobs:
               'platforms/xiaohongshu.js',
               'background/xhs-inject.js',
               'background/xhs-content.js',
+              'platforms/douyin.js',
+              'background/douyin-inject.js',
+              'background/douyin-content.js',
             ];
             let ok = true;
             for (const f of files) {

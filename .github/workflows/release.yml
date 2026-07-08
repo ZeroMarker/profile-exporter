@@ -60,6 +60,7 @@ jobs:
             - **YouTube** — Subscriptions, Watch Later
             - **Weibo** — Following, Likes, Favorites
             - **Xiaohongshu** — Following, Likes, Collections
+            - **Douyin** — Following, Likes, Favorites
 
             ### Export Formats
             JSON and CSV
