@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest
+        run: |
+          node -e "
+            const m = require('./manifest.json');
+            console.log('Extension:', m.name);
+            console.log('Version:', m.version);
+            if (!m.manifest_version) throw new Error('Missing manifest_version');
+            if (m.manifest_version !== 3) throw new Error('Expected manifest_version 3');
+          "
+
+      - name: Zip extension
+        run: |
+          zip -r profile-exporter.zip \
+            manifest.json \
+            popup/ \
+            background/ \
+            platforms/ \
+            utils/ \
+            icons/ \
+            -x "*.DS_Store"
+
+      - name: Get version
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Profile Exporter ${{ steps.version.outputs.tag }}"
+          body: |
+            ## Profile Exporter ${{ steps.version.outputs.tag }}
+
+            ### Install
+            1. Download `profile-exporter.zip`
+            2. Unzip the file
+            3. Open `chrome://extensions` → Enable Developer Mode
+            4. Click "Load unpacked" → select the unzipped folder
+
+            ### Supported Platforms
+            - **X (Twitter)** — Following, Likes, Bookmarks
+            - **Instagram** — Following, Saved
+            - **TikTok** — Following, Likes, Favorites
+            - **Bilibili** — Following, Favorites
+            - **YouTube** — Subscriptions, Watch Later
+
+            ### Export Formats
+            JSON and CSV
+          files: profile-exporter.zip

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Exporter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Profile Exporter</h1>
+    <p class="subtitle">Export following, likes & favorites</p>
+
+    <div class="section">
+      <label class="section-label">Platform</label>
+      <div class="platform-grid" id="platforms">
+        <button class="platform-btn active" data-platform="x">
+          <span class="platform-icon">X</span>
+          <span class="platform-name">X</span>
+        </button>
+        <button class="platform-btn" data-platform="instagram">
+          <span class="platform-icon">IG</span>
+          <span class="platform-name">Instagram</span>
+        </button>
+        <button class="platform-btn" data-platform="tiktok">
+          <span class="platform-icon">TT</span>
+          <span class="platform-name">TikTok</span>
+        </button>
+        <button class="platform-btn" data-platform="bilibili">
+          <span class="platform-icon">B</span>
+          <span class="platform-name">Bilibili</span>
+        </button>
+        <button class="platform-btn" data-platform="youtube">
+          <span class="platform-icon">YT</span>
+          <span class="platform-name">YouTube</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <label class="section-label">Category</label>
+      <div class="category-list" id="categories">
+        <!-- Dynamically populated based on platform -->
+      </div>
+    </div>
+
+    <div class="section">
+      <label class="section-label">Format</label>
+      <div class="format-toggle">
+        <button class="format-btn active" data-format="json">JSON</button>
+        <button class="format-btn" data-format="csv">CSV</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <label class="section-label">Max items</label>
+      <input type="number" id="maxItems" value="1000" min="1" max="10000" class="max-items-input">
+    </div>
+
+    <button class="export-btn" id="exportBtn">Export</button>
+
+    <div class="status-bar" id="statusBar">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="status-text" id="statusText"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

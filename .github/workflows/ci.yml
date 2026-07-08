@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const m = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+
+            // Required fields
+            const required = ['manifest_version', 'name', 'version', 'background', 'action'];
+            for (const key of required) {
+              if (!m[key]) throw new Error('Missing required field: ' + key);
+            }
+
+            // MV3 check
+            if (m.manifest_version !== 3) throw new Error('Expected manifest_version 3');
+
+            // Permissions
+            if (!m.permissions?.includes('cookies')) throw new Error('Missing cookies permission');
+            if (!m.permissions?.includes('downloads')) throw new Error('Missing downloads permission');
+
+            // Service worker exists
+            const sw = m.background?.service_worker;
+            if (!sw) throw new Error('Missing background.service_worker');
+            if (!fs.existsSync(sw)) throw new Error('Service worker not found: ' + sw);
+
+            // Popup exists
+            const popup = m.action?.default_popup;
+            if (!popup) throw new Error('Missing action.default_popup');
+            if (!fs.existsSync(popup)) throw new Error('Popup not found: ' + popup);
+
+            console.log('manifest.json OK');
+            console.log('  name:', m.name);
+            console.log('  version:', m.version);
+            console.log('  permissions:', m.permissions.join(', '));
+          "
+
+      - name: Check required files exist
+        run: |
+          for f in \
+            background/service-worker.js \
+            popup/popup.html \
+            popup/popup.js \
+            popup/popup.css \
+            utils/api.js \
+            utils/export.js \
+            platforms/x.js \
+            platforms/instagram.js \
+            platforms/tiktok.js \
+            platforms/bilibili.js \
+            platforms/youtube.js \
+            icons/icon16.png \
+            icons/icon48.png \
+            icons/icon128.png; do
+            if [ ! -f "$f" ]; then
+              echo "MISSING: $f"
+              exit 1
+            fi
+          done
+          echo "All required files present"
+
+      - name: Lint JavaScript syntax
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = [
+              'background/service-worker.js',
+              'popup/popup.js',
+              'utils/api.js',
+              'utils/export.js',
+              'platforms/x.js',
+              'platforms/instagram.js',
+              'platforms/tiktok.js',
+              'platforms/bilibili.js',
+              'platforms/youtube.js',
+            ];
+            let ok = true;
+            for (const f of files) {
+              try {
+                const code = fs.readFileSync(f, 'utf8');
+                // Check for basic syntax by attempting parse (wrapped in function to handle browser globals)
+                new Function(code);
+                console.log('OK:', f);
+              } catch (e) {
+                console.error('SYNTAX ERROR:', f, e.message);
+                ok = false;
+              }
+            }
+            if (!ok) process.exit(1);
+          "
