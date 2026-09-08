@@ -35,9 +35,8 @@ async function handleExport({ platform, categories, format, maxItems }) {
   let total = 0;
 
   for (const category of categories) {
-    if (!mod.categories.includes(category)) continue;
-
     const items = await mod.fetch(category, { maxItems });
+
     if (items.length === 0) continue;
 
     const data = {

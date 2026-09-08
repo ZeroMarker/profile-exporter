@@ -16,7 +16,7 @@ async function getCookieForDomain(domain) {
 }
 
 async function fetchWithCookies(url, options = {}) {
-  const { method = "GET", headers = {}, body = null, retries = 3 } = options;
+  const { method = "GET", headers = {}, body = null, retries = 3, responseType = "json" } = options;
 
   if (!Number.isInteger(retries) || retries < 1) throw new Error("Invalid retry count");
 
@@ -41,6 +41,7 @@ async function fetchWithCookies(url, options = {}) {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      if (responseType === "text") return await response.text();
       return await response.json();
     } catch (err) {
       if (attempt === retries - 1) throw err;
@@ -75,10 +76,11 @@ async function fetchAllPages(fetchPage, { maxItems = 1000, onProgress } = {}) {
     if (seenCursors.has(String(cursor))) throw new Error("Pagination cursor repeated; export may be incomplete.");
     seenCursors.add(String(cursor));
   }
-
   return allItems.slice(0, maxItems);
 }
 
+// Public X web-client guest token (widely known, not a secret).
+// May break if X rotates it; then refresh from x.com main bundle.
 function extractBearerToken() {
   return "AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA";
 }

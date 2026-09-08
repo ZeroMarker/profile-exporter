@@ -21,9 +21,7 @@ const PlatformYouTube = {
         let url = "https://www.youtube.com/feed/channels";
         if (cursor) url += `?flow=grid&sort_by=DATE_ADDED&view=0&continuation=${cursor}`;
 
-        const response = await fetch(url, { credentials: "include" });
-        if (!response.ok) throw new Error(`YouTube HTTP ${response.status}`);
-        const html = await response.text();
+        const html = await fetchWithCookies(url, { responseType: "text" });
 
         // Extract initial data from page source
         const match = html.match(/var ytInitialData = ({.+?});<\/script>/);
@@ -81,9 +79,7 @@ const PlatformYouTube = {
         let url = "https://www.youtube.com/playlist?list=WL";
         if (cursor) url += `&continuation=${cursor}`;
 
-        const response = await fetch(url, { credentials: "include" });
-        if (!response.ok) throw new Error(`YouTube HTTP ${response.status}`);
-        const html = await response.text();
+        const html = await fetchWithCookies(url, { responseType: "text" });
 
         const match = html.match(/var ytInitialData = ({.+?});<\/script>/);
         if (!match) {

@@ -18,8 +18,6 @@ const PlatformInstagram = {
     switch (category) {
       case "following":
         return this.fetchFollowing(userId, headers, { maxItems });
-      case "likes":
-        return this.fetchLikes(userId, headers, { maxItems });
       case "saved":
         return this.fetchSaved(userId, headers, { maxItems });
       default:
@@ -66,16 +64,6 @@ const PlatformInstagram = {
         };
       },
       { maxItems }
-    );
-  },
-
-  async fetchLikes(userId, headers, { maxItems }) {
-    // Instagram doesn't expose a public likes list API.
-    // We fetch the user's own media and check liked_by.
-    // This is limited — a better approach would be page scraping.
-    // For now, we return a message explaining the limitation.
-    throw new Error(
-      "Instagram does not provide a public API to list all liked posts. You can export your data via Instagram's 'Download Your Data' feature instead."
     );
   },
 

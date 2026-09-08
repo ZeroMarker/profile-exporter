@@ -2,8 +2,24 @@
 (function () {
   "use strict";
 
-  const API_PREFIXES = ["/aweme/v1/web/", "/tiktok/v1/web/", "/api/", "/web/api/"];
+  const API_PREFIXES = ["/aweme/v1/web/"];
   const interceptedResponses = {};
+  const CACHE_TTL = 30000;
+  const MAX_CACHED = 50;
+
+  function pruneCache() {
+    const now = Date.now();
+    for (const key of Object.keys(interceptedResponses)) {
+      if (now - interceptedResponses[key].ts >= CACHE_TTL) delete interceptedResponses[key];
+    }
+    const overflow = Object.keys(interceptedResponses).length - MAX_CACHED;
+    for (let i = 0; i < overflow; i++) delete interceptedResponses[Object.keys(interceptedResponses)[i]];
+  }
+
+  function storeResponse(key, data) {
+    pruneCache();
+    interceptedResponses[key] = { data, ts: Date.now() };
+  }
 
   function isDouyinApi(url) {
     return API_PREFIXES.some((p) => url.includes(p));
@@ -23,7 +39,7 @@
       if (this._url && isDouyinApi(this._url)) {
         try {
           const data = JSON.parse(this.responseText);
-          interceptedResponses[this._url] = { data, ts: Date.now() };
+          storeResponse(this._url, data);
           window.postMessage(
             { type: "__douyin_api_response__", url: this._url, data },
             "*"
@@ -43,7 +59,7 @@
       try {
         const clone = response.clone();
         const data = await clone.json();
-        interceptedResponses[url] = { data, ts: Date.now() };
+        storeResponse(url, data);
         window.postMessage(
           { type: "__douyin_api_response__", url, data },
           "*"
@@ -66,12 +82,15 @@
 
     // Check cache first (valid for 30 seconds)
     const cached = interceptedResponses[url];
-    if (cached && Date.now() - cached.ts < 30000) {
-      window.postMessage(
-        { type: "__douyin_api_response__", id, data: cached.data },
-        "*"
-      );
-      return;
+    if (cached) {
+      if (Date.now() - cached.ts < CACHE_TTL) {
+        window.postMessage(
+          { type: "__douyin_api_response__", id, data: cached.data },
+          "*"
+        );
+        return;
+      }
+      delete interceptedResponses[url];
     }
 
     try {
@@ -84,7 +103,7 @@
       });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
-      interceptedResponses[url] = { data, ts: Date.now() };
+      storeResponse(url, data);
       window.postMessage({ type: "__douyin_api_response__", id, data }, "*");
     } catch (err) {
       window.postMessage(
