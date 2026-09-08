@@ -114,3 +114,6 @@ jobs:
             }
             if (!ok) process.exit(1);
           "
+
+      - name: Run regression tests
+        run: node --test tests/*.test.js

@@ -102,20 +102,11 @@ const PlatformXiaohongshu = {
   },
 
   async callApi(path) {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: "xhs_api",
-        path,
-      });
-      if (response?.error) {
-        console.error("XHS API error:", response.error);
-        return null;
-      }
-      return response?.data || null;
-    } catch (err) {
-      console.error("XHS message error:", err);
-      return null;
-    }
+    const response = await sendToPlatformTab("www.xiaohongshu.com", { action: "xhs_api", path });
+    const data = response.data;
+    if (!data) throw new Error("Empty API response");
+    if (data.success === false || (data.code !== undefined && data.code !== 0)) throw new Error(data.message || data.status_msg || "Platform API error");
+    return data;
   },
 
   async getUserId() {

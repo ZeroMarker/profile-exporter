@@ -5,8 +5,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   const requestId = `xhs_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 
   const listener = (event) => {
+    if (event.source !== window || event.origin !== window.location.origin) return;
     if (event.data?.type !== "__xhs_api_response__" || event.data?.id !== requestId) return;
     window.removeEventListener("message", listener);
+    clearTimeout(timer);
     if (event.data.error) {
       sendResponse({ error: event.data.error });
     } else {
@@ -15,9 +17,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   };
 
   window.addEventListener("message", listener);
-  window.postMessage({ type: "__xhs_api_request__", id: requestId, path: msg.path }, "*");
+  window.postMessage({ type: "__xhs_api_request__", id: requestId, path: msg.path }, window.location.origin);
 
-  setTimeout(() => {
+  const timer = setTimeout(() => {
     window.removeEventListener("message", listener);
     sendResponse({ error: "Request timed out. Make sure you are on xiaohongshu.com." });
   }, 15000);

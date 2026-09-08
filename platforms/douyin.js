@@ -97,30 +97,21 @@ const PlatformDouyin = {
   },
 
   async callApi(url) {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: "douyin_api",
-        url,
-      });
-      if (response?.error) {
-        console.error("Douyin API error:", response.error);
-        return null;
-      }
-      return response?.data || null;
-    } catch (err) {
-      console.error("Douyin message error:", err);
-      return null;
-    }
+    const response = await sendToPlatformTab("www.douyin.com", { action: "douyin_api", url });
+    const data = response.data;
+    if (!data) throw new Error("Empty API response");
+    if (data.status_code !== undefined && data.status_code !== 0) throw new Error(data.message || data.status_msg || "Platform API error");
+    return data;
   },
 
   async getUserId() {
     try {
       const cookies = await getCookieForDomain(".douyin.com");
-      const uidCookie = cookies.find((c) => c.name === "uid_tt" || c.name === "passport_csrf_token");
+      const uidCookie = cookies.find((c) => c.name === "uid_tt" && /^\d+$/.test(c.value));
       if (uidCookie) return uidCookie.value;
 
       // Try to extract from page RENDER_DATA
-      const response = await chrome.runtime.sendMessage({ action: "douyin_get_uid" });
+      const response = await sendToPlatformTab("www.douyin.com", { action: "douyin_get_uid" });
       return response?.uid || null;
     } catch {
       return null;

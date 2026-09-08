@@ -24,6 +24,14 @@ async function handleExport({ platform, categories, format, maxItems }) {
   const mod = platformModules[platform];
   if (!mod) throw new Error(`Unknown platform: ${platform}`);
 
+  if (!Array.isArray(categories) || categories.length === 0 ||
+      categories.some((category) => !mod.categories.includes(category))) {
+    throw new Error("Select valid categories for this platform.");
+  }
+  if (!["json", "csv"].includes(format)) throw new Error("Invalid export format.");
+  if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 10000) {
+    throw new Error("Max items must be an integer from 1 to 10000.");
+  }
   let total = 0;
 
   for (const category of categories) {
@@ -40,7 +48,7 @@ async function handleExport({ platform, categories, format, maxItems }) {
       items,
     };
 
-    exportData(data, format);
+    await exportData(data, format);
     total += items.length;
   }
 

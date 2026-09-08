@@ -11,7 +11,6 @@ const PLATFORMS = {
     name: "Instagram",
     categories: [
       { id: "following", label: "Following", desc: "关注" },
-      { id: "likes", label: "Likes", desc: "点赞" },
       { id: "saved", label: "Saved", desc: "收藏" },
     ],
   },
@@ -96,6 +95,7 @@ function initPlatformButtons() {
       document.querySelector(".platform-btn.active")?.classList.remove("active");
       btn.classList.add("active");
       selectedPlatform = btn.dataset.platform;
+      selectedCategories = [PLATFORMS[selectedPlatform].categories[0].id];
       renderCategories();
     });
   });
@@ -123,11 +123,16 @@ async function startExport() {
     return;
   }
 
+  const maxItems = Number(document.getElementById("maxItems").value);
+  if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 10000) {
+    setStatus("Max items must be an integer from 1 to 10000", "error");
+    return;
+  }
   const btn = document.getElementById("exportBtn");
   btn.disabled = true;
   btn.textContent = "Exporting...";
 
-  const maxItems = parseInt(document.getElementById("maxItems").value, 10) || 1000;
+
 
   try {
     const result = await chrome.runtime.sendMessage({
@@ -139,7 +144,7 @@ async function startExport() {
     });
 
     if (result.success) {
-      setStatus(`Exported ${result.count} items`, "success");
+      setStatus(result.count ? `Download requested for ${result.count} items` : "No items found", "success");
     } else {
       setStatus(`Error: ${result.error}`, "error");
     }

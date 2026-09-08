@@ -52,13 +52,15 @@
 
   // Listen for API call requests from content script
   window.addEventListener("message", async (event) => {
+    if (event.source !== window || event.origin !== window.location.origin) return;
     if (event.data?.type !== "__xhs_api_request__") return;
 
     const { id, path } = event.data;
+    if (typeof path !== "string" || !path.startsWith(XHS_API_PREFIX)) return;
     const fullUrl = `https://edith.xiaohongshu.com${path}`;
 
     // Check cache first (valid for 30 seconds)
-    const cached = interceptedResponses[path];
+    const cached = interceptedResponses[path] || interceptedResponses[fullUrl];
     if (cached && Date.now() - cached.ts < 30000) {
       window.postMessage(
         { type: "__xhs_api_response__", id, data: cached.data },
@@ -80,6 +82,7 @@
             Origin: "https://www.xiaohongshu.com",
           },
         });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         interceptedResponses[path] = { data, ts: Date.now() };
         window.postMessage({ type: "__xhs_api_response__", id, data }, "*");

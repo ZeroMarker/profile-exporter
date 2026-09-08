@@ -18,20 +18,18 @@ function escapeCSV(value) {
   return value;
 }
 
-function downloadFile(content, filename, mimeType) {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  chrome.downloads.download({ url, filename, saveAs: true }, () => {
-    URL.revokeObjectURL(url);
-  });
+async function downloadFile(content, filename, mimeType) {
+  // Data URLs work in MV3 service workers, where createObjectURL is unavailable.
+  const url = `data:${mimeType};charset=utf-8,${encodeURIComponent(content)}`;
+  return chrome.downloads.download({ url, filename, saveAs: true });
 }
 
 function exportData(data, format) {
   const timestamp = new Date().toISOString().slice(0, 10);
   if (format === "json") {
-    downloadFile(toJSON(data), `${data.platform}_${data.category}_${timestamp}.json`, "application/json");
+    return downloadFile(toJSON(data), `${data.platform}_${data.category}_${timestamp}.json`, "application/json");
   } else {
-    downloadFile(toCSV(data), `${data.platform}_${data.category}_${timestamp}.csv`, "text/csv");
+    return downloadFile(toCSV(data), `${data.platform}_${data.category}_${timestamp}.csv`, "text/csv");
   }
 }
 

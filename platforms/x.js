@@ -59,7 +59,7 @@ const PlatformX = {
     return fetchAllPages(
       async ({ cursor }) => {
         let url = `https://api.x.com/1.1/favorites/list.json?user_id=${userId}&count=200`;
-        if (cursor) url += `&cursor=${cursor}`;
+        if (cursor) url += `&max_id=${cursor}`;
 
         const data = await fetchWithCookies(url, { headers });
         return {
@@ -70,7 +70,7 @@ const PlatformX = {
             url: `https://x.com/${t.user.screen_name}/status/${t.id_str}`,
             avatar_url: t.user.profile_image_url_https?.replace("_normal", "_400x400"),
           })),
-          nextCursor: null,
+          nextCursor: data.length === 200 ? String(BigInt(data[data.length - 1].id_str) - 1n) : null,
         };
       },
       { maxItems }

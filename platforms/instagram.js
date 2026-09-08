@@ -1,6 +1,6 @@
 const PlatformInstagram = {
   name: "instagram",
-  categories: ["following", "likes", "saved"],
+  categories: ["following", "saved"],
 
   async fetch(category, { maxItems = 1000 } = {}) {
     const cookies = await getCookieForDomain(".instagram.com");

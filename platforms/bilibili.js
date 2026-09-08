@@ -72,7 +72,7 @@ const PlatformBilibili = {
         async ({ page = 1 }) => {
           const url = `https://api.bilibili.com/x/v3/fav/resource/list?media_id=${folder.id}&pn=${page}&ps=20&order=mtime`;
           const data = await fetchWithCookies(url, { headers });
-          if (data.code !== 0) return { items: [], nextCursor: null };
+          if (data.code !== 0) throw new Error(data.message || "Cannot fetch favorite folder");
 
           const medias = data.data?.medias || [];
           return {

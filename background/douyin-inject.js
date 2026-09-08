@@ -55,9 +55,14 @@
 
   // Listen for API call requests from content script
   window.addEventListener("message", async (event) => {
+    if (event.source !== window || event.origin !== window.location.origin) return;
     if (event.data?.type !== "__douyin_api_request__") return;
 
     const { id, url } = event.data;
+    try {
+      const parsed = new URL(url);
+      if (parsed.origin !== "https://www.douyin.com" || !parsed.pathname.startsWith("/aweme/v1/web/")) return;
+    } catch { return; }
 
     // Check cache first (valid for 30 seconds)
     const cached = interceptedResponses[url];
@@ -77,6 +82,7 @@
           "Referer": "https://www.douyin.com/",
         },
       });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       interceptedResponses[url] = { data, ts: Date.now() };
       window.postMessage({ type: "__douyin_api_response__", id, data }, "*");
@@ -90,6 +96,7 @@
 
   // Listen for UID extraction requests
   window.addEventListener("message", (event) => {
+    if (event.source !== window || event.origin !== window.location.origin) return;
     if (event.data?.type !== "__douyin_get_uid__") return;
 
     try {

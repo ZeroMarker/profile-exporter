@@ -35,6 +35,10 @@ Chrome 扩展，一键导出你在各社交平台的关注列表、点赞和收�
 
 - 使用前请确保已在浏览器中登录对应平台
 - 建议先访问个人主页，再执行导出
+- 安装或更新扩展后，请刷新已打开的平台页面
+- 导出会优先使用该平台的活动标签页，否则使用找到的第一个标签页
+
+扩展依赖平台网页接口；平台更新、登录失效或限流可能导致导出失败。自动化测试覆盖本地逻辑，不代表所有平台接口已经通过登录实测。
 
 ## 导出数据格式
 
@@ -76,7 +80,10 @@ Chrome 扩展，一键导出你在各社交平台的关注列表、点赞和收�
 node -e "JSON.parse(require('fs').readFileSync('manifest.json'))"
 
 # 检查 JS 语法
-node -c platforms/*.js background/*.js popup/popup.js utils/*.js
+find platforms background popup utils tests -name "*.js" -exec node --check {} \;
+
+# 回归测试（Node.js 20+）
+node --test tests/*.test.js
 ```
 
 ## License
